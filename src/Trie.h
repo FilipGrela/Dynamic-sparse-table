@@ -10,7 +10,6 @@
 template <typename T>
 class Trie {
 private:
-    size_t index;
 
 public:
     size_t rootSize, childSize;
@@ -29,17 +28,24 @@ public:
      * @return true if the value was successfully inserted, false if it already exists.
      */
     bool insert(T value) {
+        T originalValue = value;
+        if (root->getValue() == 0) {
+            // Jeśli korzeń jest pusty, ustawiamy wartość
+            root->setValue(value);
+            return true;
+        }
+
         TrieNode<T> *currentNode = root;
-        size_t currentIndex = value % rootSize; // Reszta z dzielenia przez rootSize
+        size_t index = value % rootSize; // Reszta z dzielenia przez rootSize
 
         while (true) {
-            TrieNode<T> *nextNode = currentNode->getChild(currentIndex);
+            TrieNode<T> *nextNode = currentNode->getChild(index);
 
             if (nextNode == nullptr) {
                 // Tworzymy nowy węzeł, jeśli nie istnieje
                 nextNode = new TrieNode<T>(childSize);
-                nextNode->setValue(value);
-                currentNode->setChild(currentIndex, nextNode);
+                nextNode->setValue(originalValue);
+                currentNode->setChild(index, nextNode);
                 return true;
             }
 
@@ -51,7 +57,7 @@ public:
             currentNode = nextNode;
 
             value /= childSize;
-            currentIndex = value % childSize;
+            index = value % childSize;
         }
     }
 
@@ -64,15 +70,16 @@ public:
     TrieNode<T>* search(T value) {
         TrieNode<T> *currentNode = root; // Start from the root node
 
-        index = value % rootSize;
+        int index = value % rootSize;
         while (currentNode != nullptr) {
             if (currentNode->contains(value)) {
                 return currentNode;
             }
 
+
+            currentNode = currentNode->getChild(index);
             value /= childSize; // Dzielimy wartość przez childSize
             index = value % childSize; // Obliczamy resztę z dzielenia przez childSize
-            currentNode = currentNode->getChild(index);
 
         }
         return nullptr;

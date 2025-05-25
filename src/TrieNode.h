@@ -11,8 +11,9 @@ class TrieNode {
 private:
     T value;
     TrieNode **children;
+    size_t childSize;
 public:
-    TrieNode(size_t s) : value(0), children(new TrieNode*[s]) {
+    TrieNode(size_t s) : value(0), children(new TrieNode*[s]), childSize(s) {
         for (size_t i = 0; i < s; i++) {
             children[i] = nullptr;
         }
@@ -42,12 +43,15 @@ public:
     };
 
     void setChild(size_t index, TrieNode *child) {
-        children[index] = child;
-    }
+          if (children[index] != nullptr) {
+              delete children[index];
+          }
+          children[index] = child;
+      }
 
     void print() const {
-        std::cout << value << " " << std::endl;
-        for (size_t i = 0; i < sizeof(children) / sizeof(children[0]); i++) {
+        std::cout << value << " ";
+        for (size_t i = 0; i < childSize; i++) {
             if (children[i] != nullptr) {
                 children[i]->print();
             }
