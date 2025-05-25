@@ -33,6 +33,9 @@ void testCases(Trie<int> *trie) {
             break;
         case 'D':
             std::cin >> value;
+            if (!trie->remove(value)){
+                std::cout << value << " not exist" << std::endl;
+            }
             break;
         default:
             std::cerr << "Unknown command: " << command << std::endl;
