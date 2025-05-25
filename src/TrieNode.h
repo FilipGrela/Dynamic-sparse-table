@@ -51,7 +51,7 @@ public:
     }
 
     void print(size_t index = 0) {
-        printf("(%d, %zu) ", value, index);
+        // printf("(%d, %zu) ", value, index);
         printf("%d ", value);
 
         for (size_t i = 0; i < childSize; i++) {
