@@ -119,4 +119,4 @@ L 30
 
 ## Źródła
 
-* [Storing a Sparse Table](https://example.com/storing-a-sparse-table)
+* [Storing a Sparse Table](http://i.stanford.edu/pub/cstr/reports/cs/tr/78/683/CS-TR-78-683.pdf)
