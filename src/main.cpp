@@ -49,7 +49,7 @@ int main() {
 
     readInput(numberOtTests, minimumValue, maximumValue, rootNodes, childNodes);
 
-    Trie<int> *trie = new Trie<int>(rootNodes, childNodes);
+    Trie<int> *trie = new Trie<int>(rootNodes, childNodes, minimumValue);
 
 
     for (int i = 0; i < numberOtTests; i++) {

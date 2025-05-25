@@ -14,9 +14,12 @@ private:
     TrieNode<T> *root;
 
 public:
-    Trie(const size_t n, const size_t k) : root(new TrieNode<T>(n)) {
-        rootSize = n;
-        childSize = k;
+    Trie(const size_t n, const size_t k, T minVal) : rootSize(n), childSize(k) {
+        root = new TrieNode<T>(rootSize);
+    }
+
+    ~Trie() {
+        delete root;
     }
 
     /**
@@ -26,35 +29,37 @@ public:
      * @return true if the value was successfully inserted, false if it already exists.
      */
     bool insert(T value) {
-        T originalValue = value;
-        if (root->getValue() == 0) {
+        T tmp = value;
+        if (root->isEmpty()) {
             // Jeśli korzeń jest pusty, ustawiamy wartość
-            root->setValue(originalValue);
+            root->setValue(value);
             return true;
+        }
+        if (root->contains(value)) {
+            return false; // Wartość już istnieje
         }
 
         TrieNode<T> *currentNode = root;
-        size_t index = value % rootSize; // Reszta z dzielenia przez rootSize
-        bool first_run = true; // Flaga do pierwszego przebiegu
+        size_t index = tmp % rootSize;
+        tmp /= rootSize;
 
         while (true) {
-            TrieNode<T> *nextNode = currentNode->getChild(index);
-
-            if (nextNode == nullptr) {
-                nextNode = new TrieNode<T>(childSize, currentNode);
-                nextNode->setValue(originalValue);
-                currentNode->setChild(index, nextNode);
-                return true;
+            if (!currentNode->getChild(index)) {
+                currentNode->setChild(index, new TrieNode<T>(childSize, currentNode));
             }
 
-            if (nextNode->contains(value)) {
-                return false;
+            currentNode = currentNode->getChild(index);
+
+            if (currentNode->isEmpty()) {
+                currentNode->setValue(value);
+                return true; // Wartość już istnieje
+            }
+            if (currentNode->contains(value)) {
+                return false; // Wartość już istnieje
             }
 
-            currentNode = nextNode;
-            value /= first_run ? rootSize : childSize;
-            first_run = false;
-            index = value % childSize;
+            index = tmp % childSize;
+            tmp /= childSize;
         }
     }
 
@@ -65,36 +70,39 @@ public:
      * @return true or false.
      */
     TrieNode<T> *search(T value) {
-        T originalValue = value;
-        TrieNode<T> *currentNode = root;
-        if (currentNode->getValue() == value) {
-            return currentNode;
+        if (root->contains(value)) {
+            return root;
+        }
+        if (root->isEmpty()) {
+            return nullptr; // no value
         }
 
-        bool first_run = true;
-        size_t index = value % rootSize;
+        T tmp = value;
+        TrieNode<T> *currentNode = root;
 
-        while (true) {
-            TrieNode<T> *nextNode = currentNode->getChild(index);
 
-            if (nextNode == nullptr) {
+        size_t index = tmp % rootSize;
+        tmp /= rootSize;
+
+        while (currentNode) {
+            currentNode = currentNode->getChild(index);
+
+            if (!currentNode) {
                 return nullptr;
             }
-            if (nextNode->contains(originalValue)) {
-                return nextNode;
+            if (currentNode->contains(value)) {
+                return const_cast<TrieNode<T>*>(currentNode);
             }
 
-            currentNode = nextNode;
-
-            value /= first_run ? rootSize : childSize;
-            first_run = false;
-            index = value % childSize;
+            index = tmp % childSize;
+            tmp /= childSize;
         }
+        return nullptr;
     }
 
     void print() const {
         root->print();
-        printf("\n");
+        std::printf("\n");
     }
 
     bool remove(T value) {
@@ -102,36 +110,32 @@ public:
         if (!nodeToRemove) return false;
 
         // Leaf (has no children)
-        if (nodeToRemove->getFirstChildIndex() == -1) {
-            TrieNode<T> *parent = nodeToRemove->getParent();
-            if (parent) {
-                for (size_t i = 0; i < childSize; ++i) {
-                    if (parent->getChild(i) == nodeToRemove) {
-                        parent->setChild(i, nullptr);
-                        break;
-                    }
-                }
-                delete nodeToRemove;
-            } else {
-                nodeToRemove->setValue(0); // Clear root value without deleting it
+        if (!nodeToRemove->hasChildren()) {
+            if (nodeToRemove == root) {
+                nodeToRemove->clearValue(); // Reset root value
+                return true;
             }
+            TrieNode<T> *parent = nodeToRemove->getParent();
+            for (size_t i = 0; i < parent->getChildSize(); i++)
+                if (parent->getChild(i) == nodeToRemove) {
+                    parent->setChild(i, nullptr);
+                    break;
+                }
+            delete nodeToRemove;
             return true;
         }
 
         // Node with children
-        TrieNode<T> *currentNode = nodeToRemove;
-        short index;
+        TrieNode<T> *leaf = nodeToRemove->getLeftmostLeaf();
+        nodeToRemove->setValue(leaf->getValue());
 
-        while ((index = currentNode->getFirstChildIndex()) != -1) {
-            currentNode = currentNode->getChild(index);
-        }
-
-        nodeToRemove->setValue(currentNode->getValue());
-        TrieNode<T> *parentNode = currentNode->getParent();
-        currentNode->remove();
-
-        if (parentNode) parentNode->setChild(index, nullptr);
-
+        TrieNode<T> *parent = leaf->getParent();
+        for (size_t i = 0; i < parent->getChildSize(); i++)
+            if (parent->getChild(i) == leaf) {
+                parent->setChild(i, nullptr);
+                break;
+            }
+        delete leaf;
         return true;
     }
 };
