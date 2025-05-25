@@ -21,24 +21,24 @@ void testCases(Trie<int> *trie) {
         case 'I':
             std::cin >> value;
             if (!trie->insert(value))
-                std::cout << value << " exist" << std::endl;
+                printf("%d exist\n", value);
 
             break;
         case 'L':
             std::cin >> value;
             if (trie->search(value))
-                std::cout << value << " exist" << std::endl;
+                printf("%d exist\n", value);
             else
-                std::cout << value << " not exist" << std::endl;
+                printf("%d not exist\n", value);
             break;
         case 'D':
             std::cin >> value;
             if (!trie->remove(value)){
-                std::cout << value << " not exist" << std::endl;
+                printf("%d not exist\n", value);
             }
             break;
         default:
-            std::cerr << "Unknown command: " << command << std::endl;
+            fprintf(stderr, "Unknown command: %c\n", command);
     }
 }
 

@@ -10,10 +10,10 @@
 template<typename T>
 class Trie {
 private:
-
-public:
     size_t rootSize, childSize;
     TrieNode<T> *root;
+
+public:
 
     Trie(const size_t n, const size_t k) : root(new TrieNode<T>(n)) {
         rootSize = n;
@@ -65,11 +65,11 @@ public:
      * @param value value to search for.
      * @return true or false.
      */
-    bool search(T value) {
+    TrieNode<T> *search(T value) {
         T originalValue = value;
         TrieNode<T> *currentNode = root;
         if (currentNode->getValue() == value) {
-            return true;
+            return currentNode;
         }
 
         bool first_run = true;
@@ -79,10 +79,10 @@ public:
             TrieNode<T> *nextNode = currentNode->getChild(index);
 
             if (nextNode == nullptr) {
-                return false;
+                return nullptr;
             }
             if (nextNode->contains(originalValue)) {
-                return true;
+                return nextNode;
             }
 
             currentNode = nextNode;
@@ -95,12 +95,13 @@ public:
 
     void print() const {
         root->print();
-        std::cout << std::endl;
+        printf("\n");
     }
 
     bool remove(T value) {
         if (!search(value))
             return false;
+
     }
 };
 
