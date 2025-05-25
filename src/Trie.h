@@ -5,17 +5,33 @@
 #ifndef TRIE_H
 #define TRIE_H
 
+#include <cstdint>
+
 #include "TrieNode.h"
 
 template<typename T>
 class Trie {
 private:
-    size_t rootSize, childSize;
+    short rootSize, childSize;
     TrieNode<T> *root;
 
 public:
-    Trie(const size_t n, const size_t k, T minVal) : rootSize(n), childSize(k) {
+    Trie(const short n, const short k) : rootSize(n), childSize(k) {
         root = new TrieNode<T>(rootSize);
+    }
+
+    Trie(const Trie &other) : rootSize(other.rootSize), childSize(other.childSize) {
+        root = new TrieNode<T>(*other.root);
+    }
+
+    Trie &operator=(const Trie &other) {
+        if (this == &other) return *this;
+
+        delete root;
+        rootSize = other.rootSize;
+        childSize = other.childSize;
+        root = new TrieNode<T>(*other.root);
+        return *this;
     }
 
     ~Trie() {
@@ -40,7 +56,7 @@ public:
         }
 
         TrieNode<T> *currentNode = root;
-        size_t index = tmp % rootSize;
+        short index = tmp % rootSize;
         tmp /= rootSize;
 
         while (true) {
@@ -81,7 +97,7 @@ public:
         TrieNode<T> *currentNode = root;
 
 
-        size_t index = tmp % rootSize;
+        short index = tmp % rootSize;
         tmp /= rootSize;
 
         while (currentNode) {
@@ -91,7 +107,7 @@ public:
                 return nullptr;
             }
             if (currentNode->contains(value)) {
-                return const_cast<TrieNode<T>*>(currentNode);
+                return const_cast<TrieNode<T> *>(currentNode);
             }
 
             index = tmp % childSize;
@@ -116,7 +132,7 @@ public:
                 return true;
             }
             TrieNode<T> *parent = nodeToRemove->getParent();
-            for (size_t i = 0; i < parent->getChildSize(); i++)
+            for (short i = 0; i < parent->getChildSize(); i++)
                 if (parent->getChild(i) == nodeToRemove) {
                     parent->setChild(i, nullptr);
                     break;
@@ -130,7 +146,7 @@ public:
         nodeToRemove->setValue(leaf->getValue());
 
         TrieNode<T> *parent = leaf->getParent();
-        for (size_t i = 0; i < parent->getChildSize(); i++)
+        for (short i = 0; i < parent->getChildSize(); i++)
             if (parent->getChild(i) == leaf) {
                 parent->setChild(i, nullptr);
                 break;

@@ -2,7 +2,7 @@
 
 #include "Trie.h"
 
-void readInput(int &numberOtTests, int &minimumValue, int &maximumValue, int &rootNodes, int &childNodes) {
+void readInput(int &numberOtTests, int &minimumValue, int &maximumValue, short &rootNodes, short &childNodes) {
     std::cin >> numberOtTests;
     std::cin >> minimumValue >> maximumValue;
     std::cin >> rootNodes >> childNodes;
@@ -33,7 +33,7 @@ void testCases(Trie<int> *trie) {
             break;
         case 'D':
             std::cin >> value;
-            if (!trie->remove(value)){
+            if (!trie->remove(value)) {
                 printf("%d not exist\n", value);
             }
             break;
@@ -45,11 +45,11 @@ void testCases(Trie<int> *trie) {
 int main() {
     int numberOtTests;
     int minimumValue, maximumValue;
-    int rootNodes, childNodes;
+    short rootNodes, childNodes;
 
     readInput(numberOtTests, minimumValue, maximumValue, rootNodes, childNodes);
 
-    Trie<int> *trie = new Trie<int>(rootNodes, childNodes, minimumValue);
+    Trie<int> *trie = new Trie<int>(rootNodes, childNodes);
 
 
     for (int i = 0; i < numberOtTests; i++) {

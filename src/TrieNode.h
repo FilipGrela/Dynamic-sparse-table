@@ -13,19 +13,16 @@ private:
     T value;
     TrieNode **children;
     TrieNode *parent;
-    size_t childSize;
+    short childSize;
 
 public:
-    TrieNode(size_t s, TrieNode *parent = nullptr)
-        : empty(true), parent(parent), childSize(s) {
-        children = new TrieNode *[s];
-        for (size_t i = 0; i < s; i++) {
-            children[i] = nullptr;
-        }
+    TrieNode(short s, TrieNode *parent = nullptr)
+        : empty(true), value(), children(nullptr), parent(parent), childSize(s) {
     }
 
     ~TrieNode() {
-        for (size_t i = 0; i < childSize; ++i)
+        if (!children) return;
+        for (short i = 0; i < childSize; ++i)
             if (children[i]) delete children[i];
         delete [] children;
     }
@@ -57,29 +54,41 @@ public:
         return this->value;
     }
 
-    TrieNode *getChild(size_t index) {
+    TrieNode *getChild(short index) {
+        if (!children) {
+            return nullptr;
+        }
         return children[index];
     };
 
-    void setChild(size_t index, TrieNode *child) {
+    void setChild(short index, TrieNode *child) {
+        if (!children) {
+            children = new TrieNode *[childSize];
+            for (short i = 0; i < childSize; ++i)
+                children[i] = nullptr;
+        }
         children[index] = child;
     }
 
-    size_t getChildSize() const {
+    short getChildSize() const {
         return childSize;
     }
 
     bool hasChildren() const {
-        for (size_t i = 0; i < childSize; ++i)
+        if (!children) return false;
+        for (short i = 0; i < childSize; ++i)
             if (children[i]) return true;
         return false;
     }
 
-    TrieNode* getLeftmostLeaf() {
+    TrieNode *getLeftmostLeaf() {
         TrieNode *p = this;
         while (p->hasChildren()) {
-            for (size_t i = 0; i < p->childSize; ++i)
-                if (p->children[i]) { p = p->children[i]; break; }
+            for (short i = 0; i < p->childSize; ++i)
+                if (p->children[i]) {
+                    p = p->children[i];
+                    break;
+                }
         }
         return p;
     }
@@ -92,15 +101,12 @@ public:
         if (!isEmpty()) {
             std::printf("%d ", this->value);
         }
-        for (size_t i = 0; i < childSize; i++) {
+        if (!children) return;
+        for (short i = 0; i < childSize; i++) {
             if (children[i] != nullptr) {
                 children[i]->print();
             }
         }
-    }
-
-    void remove() {
-        delete this;
     }
 };
 
