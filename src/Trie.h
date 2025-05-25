@@ -1,11 +1,9 @@
 //
-// Created by fgrel on 25/05/2025.
+// Created by Filip Grela on 25/05/2025.
 //
 
 #ifndef TRIE_H
 #define TRIE_H
-
-#include <cstdint>
 
 #include "TrieNode.h"
 

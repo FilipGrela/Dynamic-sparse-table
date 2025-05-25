@@ -1,3 +1,7 @@
+//
+// Created by Filip Grela on 25/05/2025.
+//
+
 #include <iostream>
 
 #include "Trie.h"

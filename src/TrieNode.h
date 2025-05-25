@@ -1,5 +1,5 @@
 //
-// Created by fgrel on 25/05/2025.
+// Created by Filip Grela on 25/05/2025.
 //
 
 #ifndef TRIENODE_H
