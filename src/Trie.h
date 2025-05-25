@@ -14,7 +14,6 @@ private:
     TrieNode<T> *root;
 
 public:
-
     Trie(const size_t n, const size_t k) : root(new TrieNode<T>(n)) {
         rootSize = n;
         childSize = k;
@@ -42,7 +41,7 @@ public:
             TrieNode<T> *nextNode = currentNode->getChild(index);
 
             if (nextNode == nullptr) {
-                nextNode = new TrieNode<T>(childSize);
+                nextNode = new TrieNode<T>(childSize, currentNode);
                 nextNode->setValue(originalValue);
                 currentNode->setChild(index, nextNode);
                 return true;
@@ -99,9 +98,41 @@ public:
     }
 
     bool remove(T value) {
-        if (!search(value))
-            return false;
+        TrieNode<T> *nodeToRemove = search(value);
+        if (!nodeToRemove) return false;
 
+        // Leaf (has no children)
+        if (nodeToRemove->getFirstChildIndex() == -1) {
+            TrieNode<T> *parent = nodeToRemove->getParent();
+            if (parent) {
+                for (size_t i = 0; i < childSize; ++i) {
+                    if (parent->getChild(i) == nodeToRemove) {
+                        parent->setChild(i, nullptr);
+                        break;
+                    }
+                }
+                delete nodeToRemove;
+            } else {
+                nodeToRemove->setValue(0); // Clear root value without deleting it
+            }
+            return true;
+        }
+
+        // Node with children
+        TrieNode<T> *currentNode = nodeToRemove;
+        short index;
+
+        while ((index = currentNode->getFirstChildIndex()) != -1) {
+            currentNode = currentNode->getChild(index);
+        }
+
+        nodeToRemove->setValue(currentNode->getValue());
+        TrieNode<T> *parentNode = currentNode->getParent();
+        currentNode->remove();
+
+        if (parentNode) parentNode->setChild(index, nullptr);
+
+        return true;
     }
 };
 

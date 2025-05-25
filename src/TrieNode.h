@@ -11,20 +11,36 @@ class TrieNode {
 private:
     T value;
     TrieNode **children;
+    TrieNode *parent;
     size_t childSize;
 
 public:
-    TrieNode(size_t s) : value(0), children(new TrieNode *[s]), childSize(s) {
+    TrieNode(size_t s, TrieNode *parent = nullptr)
+        : value(0), children(new TrieNode *[s]), childSize(s), parent(parent) {
         for (size_t i = 0; i < s; i++) {
             children[i] = nullptr;
         }
     }
 
-    ~TrieNode() {
+    // ~TrieNode() {
+    //     for (size_t i = 0; i < childSize; i++) {
+    //         delete children[i];
+    //     }
+    //     delete[] children;
+    // }
+
+    /** Returns the index of the first child that is not null.
+     * If all children are null, returns -1.
+     * @return index of the first child or -1 if no children exist.
+     */
+
+    short getFirstChildIndex() const {
         for (size_t i = 0; i < childSize; i++) {
-            delete children[i];
+            if (children[i] != nullptr) {
+                return i;
+            }
         }
-        delete[] children;
+        return -1; // Jeśli nie ma dzieci, zwracamy childSize
     }
 
     bool contains(T value) const {
@@ -44,10 +60,11 @@ public:
     };
 
     void setChild(size_t index, TrieNode *child) {
-        if (children[index] != nullptr) {
-            delete children[index];
-        }
         children[index] = child;
+    }
+
+    TrieNode *getParent() const {
+        return parent;
     }
 
     void print(size_t index = 0) {
@@ -59,6 +76,10 @@ public:
                 children[i]->print(i); // Rekurencyjnie przechodzimy do dzieci
             }
         }
+    }
+
+    void remove() {
+        delete this;
     }
 };
 
