@@ -26,7 +26,7 @@ void testCases(Trie<int> *trie) {
             break;
         case 'L':
             std::cin >> value;
-            if (trie->search(value) != nullptr)
+            if (trie->search(value))
                 std::cout << value << " exist" << std::endl;
             else
                 std::cout << value << " not exist" << std::endl;

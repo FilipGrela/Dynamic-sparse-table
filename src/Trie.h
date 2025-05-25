@@ -69,25 +69,36 @@ public:
 
 
     /**
-     * Searches for node that should contain the value.
+     * Checks if value exists.
      * @param value value to search for.
-     * @return node containing the value or nullptr if not found.
+     * @return true or false.
      */
-    TrieNode<T> *search(T value) {
+    bool search(T value) {
+        T originalValue = value;
         TrieNode<T> *currentNode = root; // Start from the root node
+        if (currentNode->getValue() == value) {
+            return true; // If root is empty, return nullptr
+        }
 
-        int index = value % rootSize;
-        while (currentNode != nullptr) {
-            if (currentNode->contains(value)) {
-                return currentNode;
+        size_t index = value % rootSize; // Reszta z dzielenia przez rootSize
+
+        while (true) {
+            TrieNode<T> *nextNode = currentNode->getChild(index);
+
+            if (nextNode == nullptr) {
+                // If the next node does not exist, the value is not found
+                return false;
+            }
+            if (nextNode->contains(originalValue)) {
+                // If the value is found in the current node
+                return true;
             }
 
+            currentNode = nextNode;
 
-            currentNode = currentNode->getChild(index);
-            value /= childSize; // Dzielimy wartość przez childSize
-            index = value % childSize; // Obliczamy resztę z dzielenia przez childSize
+            value /= (currentNode == root) ? rootSize : childSize; // Adjust division based on current node
+            index = value % ((currentNode == root) ? childSize : childSize);
         }
-        return nullptr;
     }
 
     void print() const {
