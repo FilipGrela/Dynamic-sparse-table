@@ -15,7 +15,7 @@ private:
 
 public:
     Trie(const short n, const short k) : rootSize(n), childSize(k) {
-        root = new TrieNode<T>(rootSize);
+        root = new TrieNode<T>();
     }
 
     Trie(const Trie &other) : rootSize(other.rootSize), childSize(other.childSize) {
@@ -47,6 +47,7 @@ public:
         if (root->isEmpty()) {
             // Jeśli korzeń jest pusty, ustawiamy wartość
             root->setValue(value);
+            root->setChild(0, nullptr, rootSize);
             return true;
         }
         if (root->contains(value)) {
@@ -57,9 +58,11 @@ public:
         short index = tmp % rootSize;
         tmp /= rootSize;
 
+        const short curr_size = root->isEmpty() ? rootSize : childSize;
+
         while (true) {
             if (!currentNode->getChild(index)) {
-                currentNode->setChild(index, new TrieNode<T>(childSize, currentNode));
+                currentNode->setChild(index, new TrieNode<T>(currentNode), curr_size);
             }
 
             currentNode = currentNode->getChild(index);
@@ -115,7 +118,7 @@ public:
     }
 
     void print() const {
-        root->print();
+        root->print(rootSize, childSize);
         std::printf("\n");
     }
 
@@ -124,15 +127,15 @@ public:
         if (!nodeToRemove) return false;
 
         // Leaf (has no children)
-        if (!nodeToRemove->hasChildren()) {
+        if (!nodeToRemove->hasChildren(rootSize, childSize)) {
             if (nodeToRemove == root) {
                 nodeToRemove->clearValue(); // Reset root value
                 return true;
             }
             TrieNode<T> *parent = nodeToRemove->getParent();
-            for (short i = 0; i < parent->getChildSize(); i++)
+            for (short i = 0; i < childSize; i++)
                 if (parent->getChild(i) == nodeToRemove) {
-                    parent->setChild(i, nullptr);
+                    parent->setChild(i, nullptr, childSize);
                     break;
                 }
             delete nodeToRemove;
@@ -140,13 +143,13 @@ public:
         }
 
         // Node with children
-        TrieNode<T> *leaf = nodeToRemove->getLeftmostLeaf();
+        TrieNode<T> *leaf = nodeToRemove->getLeftmostLeaf(rootSize, childSize);
         nodeToRemove->setValue(leaf->getValue());
 
         TrieNode<T> *parent = leaf->getParent();
-        for (short i = 0; i < parent->getChildSize(); i++)
+        for (short i = 0; i < childSize; i++)
             if (parent->getChild(i) == leaf) {
-                parent->setChild(i, nullptr);
+                parent->setChild(i, nullptr, childSize);
                 break;
             }
         delete leaf;

@@ -5,25 +5,24 @@
 #ifndef TRIENODE_H
 #define TRIENODE_H
 
+#define EMPTY_VAL 0
 
 template<typename T>
 class TrieNode {
 private:
-    bool empty;
     T value;
     TrieNode **children;
     TrieNode *parent;
-    short childSize;
 
 public:
-    TrieNode(short s, TrieNode *parent = nullptr)
-        : empty(true), value(), children(nullptr), parent(parent), childSize(s) {
+    TrieNode(TrieNode *parent = nullptr)
+        : value(EMPTY_VAL), children(nullptr), parent(parent) {
     }
 
     ~TrieNode() {
         if (!children) return;
-        for (short i = 0; i < childSize; ++i)
-            if (children[i]) delete children[i];
+//        for (short i = 0; i < getChildSize(); ++i)
+//            if (children[i]) delete children[i];
         delete [] children;
     }
 
@@ -32,22 +31,27 @@ public:
      * @return index of the first child or -1 if no children exist.
      */
 
+//    inline short getChildSize() const {
+//        if (!children) return -1;
+//        short size = 0;
+//        while (children[size] != nullptr) ++size;
+//        return size;
+//    }
+
     bool isEmpty() const {
-        return empty;
+        return value == EMPTY_VAL;
     }
 
     bool contains(T v) const {
-        return (this->value == v && !empty);
+        return (this->value == v && !isEmpty());
     }
 
     void setValue(T v) {
         this->value = v;
-        empty = false;
     }
 
     void clearValue() {
-        empty = true;
-        value = T{};
+        value = EMPTY_VAL;
     }
 
     const T &getValue() const {
@@ -61,32 +65,32 @@ public:
         return children[index];
     };
 
-    void setChild(short index, TrieNode *child) {
+    void setChild(short index, TrieNode *child, const short newNodeSize) {
         if (!children) {
-            children = new TrieNode *[childSize];
-            for (short i = 0; i < childSize; ++i)
+            children = new TrieNode *[newNodeSize];
+            for (short i = 0; i < newNodeSize; ++i)
                 children[i] = nullptr;
         }
         children[index] = child;
     }
 
-    short getChildSize() const {
-        return childSize;
-    }
-
-    bool hasChildren() const {
+    bool hasChildren(const short rootSize, const short childSize) const {
         if (!children) return false;
-        for (short i = 0; i < childSize; ++i)
+        const short size = (parent == nullptr ? rootSize : childSize);
+        for (short i = 0; i < size; ++i)
             if (children[i]) return true;
         return false;
     }
 
-    TrieNode *getLeftmostLeaf() {
+    TrieNode *getLeftmostLeaf(const short rootSize, const short childSize) {
         TrieNode *p = this;
-        while (p->hasChildren()) {
-            for (short i = 0; i < p->childSize; ++i)
+
+        short size = (parent == nullptr ? rootSize : childSize);
+        while (p->hasChildren(rootSize, childSize)) {
+            for (short i = 0; i < size; ++i)
                 if (p->children[i]) {
                     p = p->children[i];
+                    size = childSize;
                     break;
                 }
         }
@@ -97,14 +101,16 @@ public:
         return parent;
     }
 
-    void print() {
+    void print(const short rootSize, const short childSize) {
         if (!isEmpty()) {
             std::printf("%d ", this->value);
         }
         if (!children) return;
-        for (short i = 0; i < childSize; i++) {
+
+        const short size = (parent == nullptr ? rootSize : childSize);
+        for (short i = 0; i < size; i++) {
             if (children[i] != nullptr) {
-                children[i]->print();
+                children[i]->print(rootSize, childSize);
             }
         }
     }
