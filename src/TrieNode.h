@@ -19,10 +19,10 @@ public:
     }
 
     ~TrieNode() {
-//        if (!children) return;
-//        for (short i = 0; i < 4; ++i)
-//            if (children[i]) delete children[i];
-//        delete [] children;
+        if (!children) return;
+        for (short i = 0; i < 4; ++i)
+            if (children[i]) delete children[i];
+        delete [] children;
     }
 
     inline bool isEmpty() const {
