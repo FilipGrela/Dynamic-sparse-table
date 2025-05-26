@@ -1,0 +1,219 @@
+        -:    0:Source:C:/Users/Filip/Documents/Studia/Semestr 2/Algorytmy i struktury danych/Projekty/Dynamic-sparse-table/src/TrieNode.h
+        -:    0:Graph:C:\Users\Filip\Documents\Studia\Semestr 2\Algorytmy i struktury danych\Projekty\Dynamic-sparse-table\cmake-build-debug-coverage\CMakeFiles\Dynamic_sparse_table.dir\src\main.cpp.gcno
+        -:    0:Data:C:\Users\Filip\Documents\Studia\Semestr 2\Algorytmy i struktury danych\Projekty\Dynamic-sparse-table\cmake-build-debug-coverage\CMakeFiles\Dynamic_sparse_table.dir\src\main.cpp.gcda
+        -:    0:Runs:1
+        -:    1://
+        -:    2:// Created by Filip Grela on 25/05/2025.
+        -:    3://
+        -:    4:
+        -:    5:#ifndef TRIENODE_H
+        -:    6:#define TRIENODE_H
+        -:    7:
+        -:    8:#define EMPTY_VAL 0
+        -:    9:
+        -:   10:template<typename T>
+        -:   11:class TrieNode {
+        -:   12:private:
+        -:   13:    T value;
+        -:   14:    TrieNode **children;
+        -:   15:
+        -:   16:public:
+function _ZN8TrieNodeIiEC1EPS0_ called 2033 returned 100% blocks executed 100%
+     2033:   17:    TrieNode(TrieNode *parent = nullptr)
+     2033:   18:        : value(EMPTY_VAL), children(nullptr) {
+     2033:   19:    }
+        -:   20:
+function _ZN8TrieNodeIiED1Ev called 64 returned 100% blocks executed 100%
+       64:   21:    ~TrieNode() {
+       64:   22:        if (!children) return;
+       64:   22-block  0
+branch  0 taken 28 (fallthrough)
+branch  1 taken 36
+       28:   22-block  1
+      180:   23:        for (short i = 0; i < 4; ++i)
+       36:   23-block  0
+      144:   23-block  1
+      180:   23-block  2
+branch  0 taken 144
+branch  1 taken 36 (fallthrough)
+      144:   24:            if (children[i]) delete children[i];
+      144:   24-block  0
+branch  0 taken 63 (fallthrough)
+branch  1 taken 81
+       63:   24-block  1
+branch  2 taken 63 (fallthrough)
+branch  3 taken 0
+       63:   24-block  2
+call    4 returned 63
+call    5 returned 63
+       36:   25:        delete [] children;
+       36:   25-block  0
+branch  0 taken 36 (fallthrough)
+branch  1 taken 0
+       36:   25-block  1
+call    2 returned 36
+       64:   26:    }
+       36:   26-block  0
+       28:   26-block  1
+        -:   27:
+function _ZNK8TrieNodeIiE7isEmptyEv called 1078248 returned 100% blocks executed 100%
+  1078248:   28:    inline bool isEmpty() const {
+  1078248:   29:        return value == EMPTY_VAL;
+  1078248:   29-block  0
+        -:   30:    }
+        -:   31:
+function _ZNK8TrieNodeIiE8containsEi called 718245 returned 100% blocks executed 100%
+   718245:   32:    inline bool contains(T v) const {
+   718245:   33:        return (this->value == v && !isEmpty());
+   718245:   33-block  0
+branch  0 taken 177969 (fallthrough)
+branch  1 taken 540276
+   177969:   33-block  1
+call    2 returned 177969
+branch  3 taken 177969 (fallthrough)
+branch  4 taken 0
+   177969:   33-block  2
+   540276:   33-block  3
+   718245:   33-block  4
+        -:   34:    }
+        -:   35:
+function _ZN8TrieNodeIiE8setValueEi called 2033 returned 100% blocks executed 100%
+     2033:   36:    void setValue(T v) {
+     2033:   37:        this->value = v;
+     2033:   38:    }
+        -:   39:
+function _ZN8TrieNodeIiE10clearValueEv called 0 returned 0% blocks executed 0%
+    #####:   40:    void clearValue() {
+    #####:   41:        value = EMPTY_VAL;
+    #####:   42:    }
+        -:   43:
+function _ZNK8TrieNodeIiE8getValueEv called 0 returned 0% blocks executed 0%
+    #####:   44:    inline const T &getValue() const {
+    #####:   45:        return this->value;
+    %%%%%:   45-block  0
+        -:   46:    }
+        -:   47:
+function _ZN8TrieNodeIiE8getChildEs called 1080552 returned 100% blocks executed 100%
+  1080552:   48:    inline TrieNode *getChild(short index) {
+  1080552:   49:        if (!children) return nullptr;
+  1080552:   49-block  0
+branch  0 taken 738 (fallthrough)
+branch  1 taken 1079814
+      738:   49-block  1
+  1079814:   50:        return children[index];
+  1079814:   50-block  0
+        -:   51:    };
+        -:   52:
+function _ZN8TrieNodeIiE8setChildEsPS0_s called 2033 returned 100% blocks executed 89%
+     2033:   53:    void setChild(short index, TrieNode *child, const short newNodeSize) {
+     2033:   54:        if (!children) {
+     2033:   54-block  0
+branch  0 taken 739 (fallthrough)
+branch  1 taken 1294
+     739*:   55:            children = new TrieNode *[newNodeSize];
+      739:   55-block  0
+branch  0 taken 739 (fallthrough)
+branch  1 taken 0
+      739:   55-block  1
+    %%%%%:   55-block  2
+call    2 never executed
+      739:   55-block  3
+call    3 returned 739
+     6675:   56:            for (short i = 0; i < newNodeSize; ++i)
+     6675:   56-block  0
+branch  0 taken 5936
+branch  1 taken 739 (fallthrough)
+     5936:   57:                children[i] = nullptr;
+     5936:   57-block  0
+        -:   58:        }
+     2033:   59:        children[index] = child;
+     2033:   60:    }
+        -:   61:
+function _ZNK8TrieNodeIiE11hasChildrenEs called 0 returned 0% blocks executed 0%
+    #####:   62:    inline bool hasChildren(const short size) const {
+    #####:   63:        if (!children) return false;
+    %%%%%:   63-block  0
+branch  0 never executed (fallthrough)
+branch  1 never executed
+    %%%%%:   63-block  1
+    #####:   64:        for (short i = 0; i < size; ++i)
+    %%%%%:   64-block  0
+    %%%%%:   64-block  1
+    %%%%%:   64-block  2
+branch  0 never executed
+branch  1 never executed (fallthrough)
+    #####:   65:            if (children[i]) return true;
+    %%%%%:   65-block  0
+branch  0 never executed (fallthrough)
+branch  1 never executed
+    %%%%%:   65-block  1
+    #####:   66:        return false;
+    %%%%%:   66-block  0
+        -:   67:    }
+        -:   68:
+function _ZN8TrieNodeIiE15getLeftmostLeafEss called 0 returned 0% blocks executed 0%
+    #####:   69:    TrieNode *getLeftmostLeaf(short curr_size, short childSize) {
+    #####:   70:        TrieNode *p = this;
+    #####:   71:        while (p->hasChildren(curr_size)) {
+    %%%%%:   71-block  0
+    %%%%%:   71-block  1
+call    0 never executed
+branch  1 never executed
+branch  2 never executed (fallthrough)
+    #####:   72:            for (short i = 0; i < curr_size; ++i) {
+    %%%%%:   72-block  0
+    %%%%%:   72-block  1
+    %%%%%:   72-block  2
+branch  0 never executed
+branch  1 never executed (fallthrough)
+    #####:   73:                if (p->children[i]) {
+    %%%%%:   73-block  0
+branch  0 never executed (fallthrough)
+branch  1 never executed
+    #####:   74:                    p = p->children[i];
+    #####:   75:                    curr_size = childSize;
+    #####:   76:                    break;
+    %%%%%:   76-block  0
+        -:   77:                }
+        -:   78:            }
+        -:   79:        }
+    #####:   80:        return p;
+    %%%%%:   80-block  0
+        -:   81:    }
+        -:   82:
+function _ZN8TrieNodeIiE5printEss called 0 returned 0% blocks executed 0%
+    #####:   83:    void print(const short cur_size, const short childSize) {
+    #####:   84:        if (!isEmpty()) {
+    %%%%%:   84-block  0
+call    0 never executed
+branch  1 never executed (fallthrough)
+branch  2 never executed
+    #####:   85:            std::printf("%d ", this->value);
+    %%%%%:   85-block  0
+call    0 never executed
+        -:   86:        }
+    #####:   87:        if (!children) return;
+    %%%%%:   87-block  0
+branch  0 never executed (fallthrough)
+branch  1 never executed
+    %%%%%:   87-block  1
+        -:   88:
+    #####:   89:        for (short i = 0; i < cur_size; i++) {
+    %%%%%:   89-block  0
+    %%%%%:   89-block  1
+    %%%%%:   89-block  2
+branch  0 never executed
+branch  1 never executed (fallthrough)
+    #####:   90:            if (children[i] != nullptr) {
+    %%%%%:   90-block  0
+branch  0 never executed (fallthrough)
+branch  1 never executed
+    #####:   91:                children[i]->print(childSize, childSize);
+    %%%%%:   91-block  0
+call    0 never executed
+        -:   92:            }
+        -:   93:        }
+        -:   94:    }
+        -:   95:};
+        -:   96:
+        -:   97:#endif //TRIENODE_H

@@ -14,27 +14,22 @@ private:
     TrieNode **children;
 
 public:
-    TrieNode(TrieNode *parent = nullptr)
+    TrieNode()
         : value(EMPTY_VAL), children(nullptr) {
     }
 
     ~TrieNode() {
-        if (!children) return;
-        for (short i = 0; i < 4; ++i)
-            if (children[i]) delete children[i];
-        delete [] children;
+//        if (!children) return;
+//        for (short i = 0; i < 4; ++i)
+//            if (children[i]) delete children[i];
+//        delete [] children;
     }
 
-    /** Returns the index of the first child that is not null.
-     * If all children are null, returns -1.
-     * @return index of the first child or -1 if no children exist.
-     */
-
-    bool isEmpty() const {
+    inline bool isEmpty() const {
         return value == EMPTY_VAL;
     }
 
-    bool contains(T v) const {
+    inline bool contains(T v) const {
         return (this->value == v && !isEmpty());
     }
 
@@ -46,14 +41,17 @@ public:
         value = EMPTY_VAL;
     }
 
-    const T &getValue() const {
+    TrieNode<T>** getChildren() {
+        return children;
+    }
+
+
+    inline const T &getValue() const {
         return this->value;
     }
 
-    TrieNode *getChild(short index) {
-        if (!children) {
-            return nullptr;
-        }
+    inline TrieNode *getChild(short index) {
+        if (!children) return nullptr;
         return children[index];
     };
 
@@ -66,23 +64,23 @@ public:
         children[index] = child;
     }
 
-    bool hasChildren(const short size) const {
+    inline bool hasChildren(const short size) const {
         if (!children) return false;
         for (short i = 0; i < size; ++i)
             if (children[i]) return true;
         return false;
     }
 
-    TrieNode *getLeftmostLeaf(short curr_size, const short childSize) {
+    TrieNode *getLeftmostLeaf(short curr_size, short childSize) {
         TrieNode *p = this;
-
         while (p->hasChildren(curr_size)) {
-            for (short i = 0; i < curr_size; ++i)
+            for (short i = 0; i < curr_size; ++i) {
                 if (p->children[i]) {
                     p = p->children[i];
                     curr_size = childSize;
                     break;
                 }
+            }
         }
         return p;
     }

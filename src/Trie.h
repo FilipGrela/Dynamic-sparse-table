@@ -8,14 +8,25 @@
 #include "TrieNode.h"
 
 template<typename T>
+
 class Trie {
 private:
+    static const int POOL_SIZE = 500;
+    static TrieNode<int>* freeStack[POOL_SIZE];
+    static int top;
+
     short rootSize, childSize;
     TrieNode<T> *root;
+
+    struct pair{
+        TrieNode<T> *node;
+        TrieNode<T> *parent;
+    };
 
 public:
     Trie(const short n, const short k) : rootSize(n), childSize(k) {
         root = new TrieNode<T>();
+        top = -1;
     }
 
     Trie(const Trie &other) : rootSize(other.rootSize), childSize(other.childSize) {
@@ -62,7 +73,7 @@ public:
 
         while (true) {
             if (!currentNode->getChild(index)) {
-                currentNode->setChild(index, new TrieNode<T>(currentNode), curr_size);
+                currentNode->setChild(index, new TrieNode<T>(), curr_size);
             }
 
             currentNode = currentNode->getChild(index);
@@ -86,35 +97,33 @@ public:
      * @param value value to search for.
      * @return true or false.
      */
-    TrieNode<T> *search(T value) {
+    pair search(T value) {
+        pair result = {nullptr, nullptr};
         if (root->contains(value)) {
-            return root;
+            return {const_cast<TrieNode<T>*>(root), nullptr};
         }
         if (root->isEmpty()) {
-            return nullptr; // no value
+            return result;
         }
 
-        T tmp = value;
         TrieNode<T> *currentNode = root;
-
-
+        TrieNode<T> *parentNode = nullptr;
+        T tmp = value;
         short index = tmp % rootSize;
         tmp /= rootSize;
 
         while (currentNode) {
-            currentNode = currentNode->getChild(index);
-
-            if (!currentNode) {
-                return nullptr;
+            TrieNode<T>* child = currentNode->getChild(index);
+            if (!child) return result;
+            if (child->contains(value)) {
+                return {child, currentNode};
             }
-            if (currentNode->contains(value)) {
-                return const_cast<TrieNode<T> *>(currentNode);
-            }
-
+            parentNode = currentNode;
+            currentNode = child;
             index = tmp % childSize;
             tmp /= childSize;
         }
-        return nullptr;
+        return result;
     }
 
     void print() const {
@@ -122,69 +131,81 @@ public:
         std::printf("\n");
     }
 
-    TrieNode<T>* findParent(TrieNode<T>* current, TrieNode<T>* target, short rootSize, short childSize) {
-
-        if (!current || !current->hasChildren(isRoot(current) ? rootSize : childSize)) return nullptr;
-
-        short size = (current == root) ? rootSize : childSize;
-
-        for (short i = 0; i < size; ++i) {
-            TrieNode<T>* child = current->getChild(i);
-            if (child == nullptr) continue;
-            if (child == target) return current;
-            TrieNode<T>* p = findParent(child, target, rootSize, childSize);
-            if (p != nullptr) return p;
-        }
-        return nullptr;
-    }
-
     inline const bool isRoot(TrieNode<T> *node){
         return node == root;
     }
 
-    bool remove(T value) {
-        TrieNode<T> *nodeToRemove = search(value);
-        if (!nodeToRemove) return false;
+    bool remove(int value) {
+        pair p = search(value);
+        TrieNode<int>* nodeToRemove = p.node;
+        TrieNode<int>* parent = p.parent;
 
-        // Usuwanie liścia
+        if (!nodeToRemove) return false; // brak klucza
 
+        // jeśli nodeToRemove nie ma dzieci
+        const short curr_size = isRoot(nodeToRemove) ? rootSize : childSize;
 
-        if (!nodeToRemove->hasChildren(isRoot(nodeToRemove) ? rootSize : childSize)) {
+        if (!nodeToRemove->hasChildren(curr_size)) {
             if (isRoot(nodeToRemove)) {
                 nodeToRemove->clearValue();
                 return true;
             }
-            TrieNode<T>* parent = findParent(root, nodeToRemove, rootSize, childSize);
-            if (!parent) return false; // Nie znaleziono rodzica (błąd)
-
-            short size = (parent == root) ? rootSize : childSize;
-            for (short i = 0; i < size; ++i) {
-                if (parent->getChild(i) == nodeToRemove) {
-                    parent->setChild(i, nullptr, size);
+            // szukamy indeksu w rodzicu
+            TrieNode<int>** siblings = parent->getChildren();
+            for (short i = 0; i < childSize; i++) {
+                if (siblings && siblings[i] == nodeToRemove) {
+                    delete siblings[i];
+                    siblings[i] = nullptr;
                     break;
                 }
             }
-            delete nodeToRemove;
             return true;
         }
 
-        // Usuwanie węzła z dziećmi
-        TrieNode<T> *leaf = nodeToRemove->getLeftmostLeaf(rootSize, childSize);
+        // jeśli ma dzieci, szukamy lewego liścia potomnego
+        TrieNode<int>* leaf = nodeToRemove->getLeftmostLeaf(rootSize, childSize);
         nodeToRemove->setValue(leaf->getValue());
 
-        TrieNode<T>* parent = findParent(root, leaf, rootSize, childSize);
-        if (!parent) return false;
-        short size = (parent == root) ? rootSize : childSize;
-        for (short i = 0; i < size; ++i) {
-            if (parent->getChild(i) == leaf) {
-                parent->setChild(i, nullptr, size);
-                break;
+        TrieNode<int>* leafParent = nullptr;
+        // szukamy rodzica liścia
+        TrieNode<int>* curr = root;
+        TrieNode<int>* prev = nullptr;
+        short size = rootSize;
+        int tmp = leaf->getValue();
+
+        // Szukamy liścia od korzenia (trzeba tu wyliczyć indeksy jak w insert/search)
+        while (curr && curr != leaf) {
+            prev = curr;
+            short index = tmp % size;
+            tmp /= size;
+            TrieNode<int>** currChildren = curr->getChildren();
+            if (!currChildren || !currChildren[index]) break;
+            curr = currChildren[index];
+            size = childSize;
+        }
+        leafParent = prev;
+
+        if (leafParent) {
+            TrieNode<int>** siblings = leafParent->getChildren();
+            for (short i = 0; i < childSize; i++) {
+                if (siblings && siblings[i] == leaf) {
+                    delete siblings[i];
+                    siblings[i] = nullptr;
+                    break;
+                }
             }
         }
-        delete leaf;
         return true;
     }
 
+
+
 };
+
+template<typename T>
+TrieNode<int>* Trie<T>::freeStack[POOL_SIZE];
+
+template<typename T>
+int Trie<T>::top = -1;
 
 #endif //TRIE_H

@@ -7,6 +7,8 @@
 #include "Trie.h"
 
 void readInput(int &numberOtTests, int &minimumValue, int &maximumValue, short &rootNodes, short &childNodes) {
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
     std::cin >> numberOtTests;
     std::cin >> minimumValue >> maximumValue;
     std::cin >> rootNodes >> childNodes;
@@ -30,7 +32,7 @@ void testCases(Trie<int> *trie) {
             break;
         case 'L':
             std::cin >> value;
-            if (trie->search(value))
+            if (trie->search(value).node)
                 printf("%d exist\n", value);
             else
                 printf("%d not exist\n", value);

@@ -1,0 +1,424 @@
+        -:    0:Source:C:/Users/Filip/Documents/Studia/Semestr 2/Algorytmy i struktury danych/Projekty/Dynamic-sparse-table/src/Trie.h
+        -:    0:Graph:C:\Users\Filip\Documents\Studia\Semestr 2\Algorytmy i struktury danych\Projekty\Dynamic-sparse-table\cmake-build-debug-coverage\CMakeFiles\Dynamic_sparse_table.dir\src\main.cpp.gcno
+        -:    0:Data:C:\Users\Filip\Documents\Studia\Semestr 2\Algorytmy i struktury danych\Projekty\Dynamic-sparse-table\cmake-build-debug-coverage\CMakeFiles\Dynamic_sparse_table.dir\src\main.cpp.gcda
+        -:    0:Runs:1
+        -:    1://
+        -:    2:// Created by Filip Grela on 25/05/2025.
+        -:    3://
+        -:    4:
+        -:    5:#ifndef TRIE_H
+        -:    6:#define TRIE_H
+        -:    7:
+        -:    8:#include "TrieNode.h"
+        -:    9:
+        -:   10:template<typename T>
+        -:   11:class Trie {
+        -:   12:private:
+        -:   13:    static const int POOL_SIZE = 500;
+        -:   14:    static TrieNode<int>* freeStack[POOL_SIZE];
+        -:   15:    static int top;
+        -:   16:
+        -:   17:    short rootSize, childSize;
+        -:   18:    TrieNode<T> *root;
+        -:   19:
+        -:   20:public:
+function _ZN4TrieIiEC1Ess called 1 returned 100% blocks executed 100%
+        1:   21:    Trie(const short n, const short k) : rootSize(n), childSize(k) {
+        1:   22:        root = new TrieNode<T>();
+        1:   22-block  0
+call    0 returned 1
+call    1 returned 1
+        1:   23:        top = -1;
+        1:   24:    }
+        -:   25:
+        -:   26:    Trie(const Trie &other) : rootSize(other.rootSize), childSize(other.childSize) {
+        -:   27:        root = new TrieNode<T>(*other.root);
+        -:   28:    }
+        -:   29:
+        -:   30:    Trie &operator=(const Trie &other) {
+        -:   31:        if (this == &other) return *this;
+        -:   32:
+        -:   33:        delete root;
+        -:   34:        rootSize = other.rootSize;
+        -:   35:        childSize = other.childSize;
+        -:   36:        root = new TrieNode<T>(*other.root);
+        -:   37:        return *this;
+        -:   38:    }
+        -:   39:
+function _ZN4TrieIiED1Ev called 1 returned 100% blocks executed 100%
+        1:   40:    ~Trie() {
+        1:   41:        delete root;
+        1:   41-block  0
+branch  0 taken 1 (fallthrough)
+branch  1 taken 0
+        1:   41-block  1
+call    2 returned 1
+call    3 returned 1
+        1:   42:    }
+        -:   43:
+        -:   44:    /**
+        -:   45:     * Inserts a value into the trie.
+        -:   46:     *
+        -:   47:     * @param value The value to insert into the trie.
+        -:   48:     * @return true if the value was successfully inserted, false if it already exists.
+        -:   49:     */
+function _ZN4TrieIiE6insertEi called 180002 returned 100% blocks executed 87%
+   180002:   50:    bool insert(T value) {
+   180002:   51:        T tmp = value;
+   180002:   52:        if (root->isEmpty()) {
+   180002:   52-block  0
+call    0 returned 180002
+branch  1 taken 1 (fallthrough)
+branch  2 taken 180001
+        -:   53:            // Jeśli korzeń jest pusty, ustawiamy wartość
+        1:   54:            root->setValue(value);
+        1:   54-block  0
+call    0 returned 1
+        1:   55:            root->setChild(0, nullptr, rootSize);
+call    0 returned 1
+        1:   56:            return true;
+        -:   57:        }
+   180001:   58:        if (root->contains(value)) {
+   180001:   58-block  0
+call    0 returned 180001
+branch  1 taken 0 (fallthrough)
+branch  2 taken 180001
+    #####:   59:            return false; // Wartość już istnieje
+    %%%%%:   59-block  0
+        -:   60:        }
+        -:   61:
+   180001:   62:        TrieNode<T> *currentNode = root;
+   180001:   63:        short index = tmp % rootSize;
+   180001:   64:        tmp /= rootSize;
+        -:   65:
+  180001*:   66:        const short curr_size = root->isEmpty() ? rootSize : childSize;
+   180001:   66-block  0
+call    0 returned 180001
+branch  1 taken 0 (fallthrough)
+branch  2 taken 180001
+    %%%%%:   66-block  1
+   180001:   66-block  2
+   180001:   66-block  3
+        -:   67:
+        -:   68:        while (true) {
+   540276:   69:            if (!currentNode->getChild(index)) {
+   540276:   69-block  0
+call    0 returned 540276
+branch  1 taken 2032 (fallthrough)
+branch  2 taken 538244
+     2032:   70:                currentNode->setChild(index, new TrieNode<T>(currentNode), curr_size);
+     2032:   70-block  0
+call    0 returned 2032
+call    1 returned 2032
+call    2 returned 2032
+branch  3 taken 2032 (fallthrough)
+branch  4 taken 0 (throw)
+    $$$$$:   70-block  1
+branch  5 never executed (fallthrough)
+branch  6 never executed
+    $$$$$:   70-block  2
+call    7 never executed
+        -:   71:            }
+        -:   72:
+   540276:   73:            currentNode = currentNode->getChild(index);
+   540276:   73-block  0
+call    0 returned 540276
+        -:   74:
+   540276:   75:            if (currentNode->isEmpty()) {
+call    0 returned 540276
+branch  1 taken 2032 (fallthrough)
+branch  2 taken 538244
+     2032:   76:                currentNode->setValue(value);
+     2032:   76-block  0
+call    0 returned 2032
+     2032:   77:                return true; // Wartość już istnieje
+        -:   78:            }
+   538244:   79:            if (currentNode->contains(value)) {
+   538244:   79-block  0
+call    0 returned 538244
+branch  1 taken 177969 (fallthrough)
+branch  2 taken 360275
+   177969:   80:                return false; // Wartość już istnieje
+   177969:   80-block  0
+        -:   81:            }
+        -:   82:
+   360275:   83:            index = tmp % childSize;
+   360275:   84:            tmp /= childSize;
+   360275:   84-block  0
+        -:   85:        }
+        -:   86:    }
+        -:   87:
+        -:   88:
+        -:   89:    /**
+        -:   90:     * Checks if value exists.
+        -:   91:     * @param value value to search for.
+        -:   92:     * @return true or false.
+        -:   93:     */
+function _ZN4TrieIiE6searchEi called 0 returned 0% blocks executed 0%
+    #####:   94:    TrieNode<T> *search(T value) {
+    #####:   95:        if (root->contains(value)) {
+    %%%%%:   95-block  0
+call    0 never executed
+branch  1 never executed (fallthrough)
+branch  2 never executed
+    #####:   96:            return root;
+    %%%%%:   96-block  0
+        -:   97:        }
+    #####:   98:        if (root->isEmpty()) {
+    %%%%%:   98-block  0
+call    0 never executed
+branch  1 never executed (fallthrough)
+branch  2 never executed
+    #####:   99:            return nullptr; // no value
+    %%%%%:   99-block  0
+        -:  100:        }
+        -:  101:
+    #####:  102:        T tmp = value;
+    #####:  103:        TrieNode<T> *currentNode = root;
+        -:  104:
+        -:  105:
+    #####:  106:        short index = tmp % rootSize;
+    #####:  107:        tmp /= rootSize;
+        -:  108:
+    #####:  109:        while (currentNode) {
+    %%%%%:  109-block  0
+    %%%%%:  109-block  1
+branch  0 never executed
+branch  1 never executed (fallthrough)
+    #####:  110:            currentNode = currentNode->getChild(index);
+    %%%%%:  110-block  0
+call    0 never executed
+        -:  111:
+    #####:  112:            if (!currentNode) {
+branch  0 never executed (fallthrough)
+branch  1 never executed
+    #####:  113:                return nullptr;
+    %%%%%:  113-block  0
+        -:  114:            }
+    #####:  115:            if (currentNode->contains(value)) {
+    %%%%%:  115-block  0
+call    0 never executed
+branch  1 never executed (fallthrough)
+branch  2 never executed
+    #####:  116:                return const_cast<TrieNode<T> *>(currentNode);
+    %%%%%:  116-block  0
+        -:  117:            }
+        -:  118:
+    #####:  119:            index = tmp % childSize;
+    #####:  120:            tmp /= childSize;
+    %%%%%:  120-block  0
+        -:  121:        }
+    #####:  122:        return nullptr;
+    %%%%%:  122-block  0
+        -:  123:    }
+        -:  124:
+function _ZNK4TrieIiE5printEv called 0 returned 0% blocks executed 0%
+    #####:  125:    void print() const {
+    #####:  126:        root->print(rootSize, childSize);
+    %%%%%:  126-block  0
+call    0 never executed
+    #####:  127:        std::printf("\n");
+call    0 never executed
+    #####:  128:    }
+        -:  129:
+function _ZN4TrieIiE10findParentEP8TrieNodeIiES3_ss called 0 returned 0% blocks executed 0%
+    #####:  130:    TrieNode<T>* findParent(TrieNode<T>* current, TrieNode<T>* target, short rootSize, short childSize) {
+        -:  131:
+    #####:  132:        if (!current || !current->hasChildren(isRoot(current) ? rootSize : childSize)) return nullptr;
+    %%%%%:  132-block  0
+branch  0 never executed (fallthrough)
+branch  1 never executed
+    %%%%%:  132-block  1
+call    2 never executed
+branch  3 never executed (fallthrough)
+branch  4 never executed
+    %%%%%:  132-block  2
+    %%%%%:  132-block  3
+    %%%%%:  132-block  4
+call    5 never executed
+branch  6 never executed (fallthrough)
+branch  7 never executed
+    %%%%%:  132-block  5
+    %%%%%:  132-block  6
+    %%%%%:  132-block  7
+branch  8 never executed (fallthrough)
+branch  9 never executed
+    %%%%%:  132-block  8
+        -:  133:
+    #####:  134:        short size = (current == root) ? rootSize : childSize;
+    %%%%%:  134-block  0
+branch  0 never executed (fallthrough)
+branch  1 never executed
+    %%%%%:  134-block  1
+    %%%%%:  134-block  2
+        -:  135:
+    #####:  136:        for (short i = 0; i < size; ++i) {
+    %%%%%:  136-block  0
+    %%%%%:  136-block  1
+    %%%%%:  136-block  2
+branch  0 never executed
+branch  1 never executed (fallthrough)
+    #####:  137:            TrieNode<T>* child = current->getChild(i);
+    %%%%%:  137-block  0
+call    0 never executed
+    #####:  138:            if (child == nullptr) continue;
+branch  0 never executed (fallthrough)
+branch  1 never executed
+    %%%%%:  138-block  0
+    #####:  139:            if (child == target) return current;
+    %%%%%:  139-block  0
+branch  0 never executed (fallthrough)
+branch  1 never executed
+    %%%%%:  139-block  1
+    #####:  140:            TrieNode<T>* p = findParent(child, target, rootSize, childSize);
+    %%%%%:  140-block  0
+call    0 never executed
+    #####:  141:            if (p != nullptr) return p;
+branch  0 never executed (fallthrough)
+branch  1 never executed
+    %%%%%:  141-block  0
+        -:  142:        }
+    #####:  143:        return nullptr;
+    %%%%%:  143-block  0
+        -:  144:    }
+        -:  145:
+function _ZN4TrieIiE6isRootEP8TrieNodeIiE called 0 returned 0% blocks executed 0%
+    #####:  146:    inline const bool isRoot(TrieNode<T> *node){
+    #####:  147:        return node == root;
+    %%%%%:  147-block  0
+        -:  148:    }
+        -:  149:
+function _ZN4TrieIiE6removeEi called 0 returned 0% blocks executed 0%
+    #####:  150:    bool remove(int value) {
+    #####:  151:        TrieNode<int>* nodeToRemove = search(value);
+    %%%%%:  151-block  0
+call    0 never executed
+    #####:  152:        if (!nodeToRemove) return false;
+branch  0 never executed (fallthrough)
+branch  1 never executed
+    %%%%%:  152-block  0
+        -:  153:
+        -:  154:        // Usuwanie liścia
+    #####:  155:        if (!nodeToRemove->hasChildren(isRoot(nodeToRemove) ? rootSize : childSize)) {
+    %%%%%:  155-block  0
+call    0 never executed
+branch  1 never executed (fallthrough)
+branch  2 never executed
+    %%%%%:  155-block  1
+    %%%%%:  155-block  2
+    %%%%%:  155-block  3
+call    3 never executed
+branch  4 never executed (fallthrough)
+branch  5 never executed
+    #####:  156:            if (isRoot(nodeToRemove)) {
+    %%%%%:  156-block  0
+call    0 never executed
+branch  1 never executed (fallthrough)
+branch  2 never executed
+    #####:  157:                nodeToRemove->clearValue();
+    %%%%%:  157-block  0
+call    0 never executed
+    #####:  158:                return true;
+        -:  159:            }
+    #####:  160:            TrieNode<int>* parent = findParent(root, nodeToRemove, rootSize, childSize);
+    %%%%%:  160-block  0
+call    0 never executed
+    #####:  161:            if (!parent) return false;
+branch  0 never executed (fallthrough)
+branch  1 never executed
+    %%%%%:  161-block  0
+        -:  162:
+    #####:  163:            short size = (parent == root) ? rootSize : childSize;
+    %%%%%:  163-block  0
+branch  0 never executed (fallthrough)
+branch  1 never executed
+    %%%%%:  163-block  1
+    %%%%%:  163-block  2
+    #####:  164:            for (short i = 0; i < size; ++i) {
+    %%%%%:  164-block  0
+    %%%%%:  164-block  1
+    %%%%%:  164-block  2
+branch  0 never executed
+branch  1 never executed (fallthrough)
+    #####:  165:                if (parent->getChild(i) == nodeToRemove) {
+    %%%%%:  165-block  0
+call    0 never executed
+branch  1 never executed (fallthrough)
+branch  2 never executed
+    #####:  166:                    parent->setChild(i, nullptr, size);
+    %%%%%:  166-block  0
+call    0 never executed
+    #####:  167:                    break;
+        -:  168:                }
+        -:  169:            }
+        -:  170:            // Odkładamy węzeł do puli zamiast usuwać
+    #####:  171:            nodeToRemove->clearValue();
+    %%%%%:  171-block  0
+call    0 never executed
+    #####:  172:            if (top + 1 < POOL_SIZE)
+branch  0 never executed (fallthrough)
+branch  1 never executed
+    #####:  173:                freeStack[++top] = nodeToRemove;
+    %%%%%:  173-block  0
+    #####:  174:            return true;
+    %%%%%:  174-block  0
+        -:  175:        }
+        -:  176:
+        -:  177:        // Usuwanie węzła z dziećmi
+    #####:  178:        TrieNode<int>* leaf = nodeToRemove->getLeftmostLeaf(rootSize, childSize);
+    %%%%%:  178-block  0
+call    0 never executed
+    #####:  179:        nodeToRemove->setValue(leaf->getValue());
+call    0 never executed
+call    1 never executed
+    #####:  180:        TrieNode<int>* parent = findParent(root, leaf, rootSize, childSize);
+call    0 never executed
+    #####:  181:        if (!parent) return false;
+branch  0 never executed (fallthrough)
+branch  1 never executed
+    %%%%%:  181-block  0
+        -:  182:
+    #####:  183:        short size = (parent == root) ? rootSize : childSize;
+    %%%%%:  183-block  0
+branch  0 never executed (fallthrough)
+branch  1 never executed
+    %%%%%:  183-block  1
+    %%%%%:  183-block  2
+    #####:  184:        for (short i = 0; i < size; ++i) {
+    %%%%%:  184-block  0
+    %%%%%:  184-block  1
+    %%%%%:  184-block  2
+branch  0 never executed
+branch  1 never executed (fallthrough)
+    #####:  185:            if (parent->getChild(i) == leaf) {
+    %%%%%:  185-block  0
+call    0 never executed
+branch  1 never executed (fallthrough)
+branch  2 never executed
+    #####:  186:                parent->setChild(i, nullptr, size);
+    %%%%%:  186-block  0
+call    0 never executed
+    #####:  187:                break;
+        -:  188:            }
+        -:  189:        }
+    #####:  190:        leaf->clearValue();
+    %%%%%:  190-block  0
+call    0 never executed
+    #####:  191:        if (top + 1 < POOL_SIZE)
+branch  0 never executed (fallthrough)
+branch  1 never executed
+    #####:  192:            freeStack[++top] = leaf;
+    %%%%%:  192-block  0
+    #####:  193:        return true;
+    %%%%%:  193-block  0
+        -:  194:    }
+        -:  195:
+        -:  196:};
+        -:  197:
+        -:  198:template<typename T>
+        -:  199:TrieNode<int>* Trie<T>::freeStack[POOL_SIZE];
+        -:  200:
+        -:  201:template<typename T>
+        -:  202:int Trie<T>::top = -1;
+        -:  203:
+        -:  204:#endif //TRIE_H
