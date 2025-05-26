@@ -122,39 +122,69 @@ public:
         std::printf("\n");
     }
 
+    TrieNode<T>* findParent(TrieNode<T>* current, TrieNode<T>* target, short rootSize, short childSize) {
+
+        if (!current || !current->hasChildren(isRoot(current) ? rootSize : childSize)) return nullptr;
+
+        short size = (current == root) ? rootSize : childSize;
+
+        for (short i = 0; i < size; ++i) {
+            TrieNode<T>* child = current->getChild(i);
+            if (child == nullptr) continue;
+            if (child == target) return current;
+            TrieNode<T>* p = findParent(child, target, rootSize, childSize);
+            if (p != nullptr) return p;
+        }
+        return nullptr;
+    }
+
+    inline const bool isRoot(TrieNode<T> *node){
+        return node == root;
+    }
+
     bool remove(T value) {
         TrieNode<T> *nodeToRemove = search(value);
         if (!nodeToRemove) return false;
 
-        // Leaf (has no children)
-        if (!nodeToRemove->hasChildren(rootSize, childSize)) {
-            if (nodeToRemove == root) {
-                nodeToRemove->clearValue(); // Reset root value
+        // Usuwanie liścia
+
+
+        if (!nodeToRemove->hasChildren(isRoot(nodeToRemove) ? rootSize : childSize)) {
+            if (isRoot(nodeToRemove)) {
+                nodeToRemove->clearValue();
                 return true;
             }
-            TrieNode<T> *parent = nodeToRemove->getParent();
-            for (short i = 0; i < childSize; i++)
+            TrieNode<T>* parent = findParent(root, nodeToRemove, rootSize, childSize);
+            if (!parent) return false; // Nie znaleziono rodzica (błąd)
+
+            short size = (parent == root) ? rootSize : childSize;
+            for (short i = 0; i < size; ++i) {
                 if (parent->getChild(i) == nodeToRemove) {
-                    parent->setChild(i, nullptr, childSize);
+                    parent->setChild(i, nullptr, size);
                     break;
                 }
+            }
             delete nodeToRemove;
             return true;
         }
 
-        // Node with children
+        // Usuwanie węzła z dziećmi
         TrieNode<T> *leaf = nodeToRemove->getLeftmostLeaf(rootSize, childSize);
         nodeToRemove->setValue(leaf->getValue());
 
-        TrieNode<T> *parent = leaf->getParent();
-        for (short i = 0; i < childSize; i++)
+        TrieNode<T>* parent = findParent(root, leaf, rootSize, childSize);
+        if (!parent) return false;
+        short size = (parent == root) ? rootSize : childSize;
+        for (short i = 0; i < size; ++i) {
             if (parent->getChild(i) == leaf) {
-                parent->setChild(i, nullptr, childSize);
+                parent->setChild(i, nullptr, size);
                 break;
             }
+        }
         delete leaf;
         return true;
     }
+
 };
 
 #endif //TRIE_H
