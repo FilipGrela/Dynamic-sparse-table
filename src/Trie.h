@@ -19,7 +19,22 @@ private:
         TrieNode<T> *parent;
     };
 
-    bool removeLeaf(TrieNode<int> *nodeToRemove, TrieNode<int> *parent) const {
+    inline bool isRoot(TrieNode<T> *node) const {
+        return node == root;
+    }
+
+    void deleteChildFromParent(TrieNode<int> *child, TrieNode<int> *parent) {
+        TrieNode<int> **siblings = parent->getChildren();
+        for (short i = 0; i < childSize; i++) {
+            if (siblings && siblings[i] == child) {
+                delete siblings[i];
+                siblings[i] = nullptr;
+                break;
+            }
+        }
+    }
+
+    bool removeLeaf(TrieNode<int> *nodeToRemove, TrieNode<int> *parent) {
         // Node is root no need to delete
         if (isRoot(nodeToRemove)) {
             nodeToRemove->clearValue();
@@ -27,14 +42,8 @@ private:
         }
 
         // Remove pointer to leaf form parent and delete leaf
-        TrieNode<int> **siblings = parent->getChildren();
-        for (short i = 0; i < childSize; i++) {
-            if (siblings && siblings[i] == nodeToRemove) {
-                delete siblings[i];
-                siblings[i] = nullptr;
-                break;
-            }
-        }
+        deleteChildFromParent(nodeToRemove, parent);
+
         return true;
     }
 
@@ -69,14 +78,7 @@ private:
         // In case leaf parent is not removed node parent, we have to find its parent to reset a pointer
         TrieNode<int> *leafParent = findLeafParent(leaf);
         if (leafParent) {
-            TrieNode<int> **siblings = leafParent->getChildren();
-            for (short i = 0; i < childSize; i++) {
-                if (siblings && siblings[i] == leaf) {
-                    delete siblings[i];
-                    siblings[i] = nullptr;
-                    break;
-                }
-            }
+            deleteChildFromParent(leaf, leafParent);
         }
         return true;
     }
@@ -113,13 +115,12 @@ public:
     bool insert(T value) {
         T tmp = value;
         if (root->isEmpty()) {
-            // Jeśli korzeń jest pusty, ustawiamy wartość
+            // If root empty set value
             root->setValue(value);
             root->setChild(0, nullptr, rootSize);
             return true;
-        }
-        if (root->contains(value)) {
-            return false; // Wartość już istnieje
+        }else if (root->contains(value)) {
+            return false; // Value already exists
         }
 
         TrieNode<T> *currentNode = root;
@@ -152,7 +153,7 @@ public:
     /**
      * Checks if value exists.
      * @param value value to search for.
-     * @return true or false.
+     * @return pair of nodes {node, parent}, node contains value
      */
     pair search(T value) const {
         pair result = {nullptr, nullptr};
@@ -181,15 +182,6 @@ public:
         return result;
     }
 
-    void print() const {
-        root->print(rootSize, childSize);
-        std::printf("\n");
-    }
-
-    inline bool isRoot(TrieNode<T> *node) const {
-        return node == root;
-    }
-
     bool remove(int value) {
         pair p = search(value);
         TrieNode<int> *nodeToRemove = p.node;
@@ -206,6 +198,11 @@ public:
         }
 
         return removeNodeWithChildren(nodeToRemove);
+    }
+
+    void print() const {
+        root->print(rootSize, childSize);
+        std::printf("\n");
     }
 };
 

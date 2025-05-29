@@ -1,3 +1,0 @@
-C:\Users\Filip\AppData\Local\Programs\CLion\bin\cmake\win\x64\bin\cmake.exe -E rm -f CMakeFiles\Dynamic_sparse_table.dir/objects.a
-C:\Users\Filip\AppData\Local\Programs\CLion\bin\mingw\bin\ar.exe qc CMakeFiles\Dynamic_sparse_table.dir/objects.a @CMakeFiles\Dynamic_sparse_table.dir\objects1.rsp
-C:\Users\Filip\AppData\Local\Programs\CLion\bin\mingw\bin\g++.exe --coverage -g -Wl,--whole-archive CMakeFiles\Dynamic_sparse_table.dir/objects.a -Wl,--no-whole-archive -o Dynamic_sparse_table.exe -Wl,--out-implib,libDynamic_sparse_table.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\Dynamic_sparse_table.dir\linkLibs.rsp
